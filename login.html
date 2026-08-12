@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coders Club | Login</title>
+<style>
+  :root{--bg:#070c17;--card:#101a2c;--cyan:#35d7f0;--blue:#3a6df0;--magenta:#ea3fa0;--text:#f1f5fb;--muted:#93a4c2;--border:rgba(255,255,255,.09)}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% 20%,rgba(53,215,240,.12),transparent 40%),radial-gradient(circle at 80% 80%,rgba(234,63,160,.12),transparent 40%),var(--bg);color:var(--text);font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;padding:24px}
+  .card{width:min(430px,100%);background:var(--card);border:1px solid var(--border);border-radius:22px;padding:34px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+  .brand{text-align:center;margin-bottom:28px}
+  .brand img{width:72px;height:72px;border-radius:50%;margin:0 auto 12px;display:block}
+  h1{margin:0 0 8px;font-size:28px}
+  p{color:var(--muted);margin:0 0 24px}
+  label{display:block;margin:0 0 7px;color:var(--muted);font-size:14px}
+  input{width:100%;padding:13px 14px;margin-bottom:16px;border-radius:12px;border:1px solid var(--border);background:#0b1424;color:var(--text);outline:none}
+  input:focus{border-color:var(--cyan)}
+  button{width:100%;padding:14px;border:0;border-radius:100px;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#04121c;font-weight:700;cursor:pointer}
+  .error{min-height:22px;color:#ff7abf;text-align:center;margin:10px 0}
+  .back{display:block;text-align:center;color:var(--muted);margin-top:18px;text-decoration:none}
+  .back:hover{color:var(--cyan)}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="brand">
+    <img src="assets/logo.png" alt="Coders Club logo">
+    <h1>دخول الطلاب</h1>
+    <p>ادخل اسم المستخدم وكلمة المرور</p>
+  </div>
+
+  <form id="loginForm">
+    <label for="username">Username</label>
+    <input id="username" autocomplete="username" required>
+
+    <label for="password">Password</label>
+    <input id="password" type="password" autocomplete="current-password" required>
+
+    <div class="error" id="error"></div>
+    <button type="submit">Login</button>
+  </form>
+
+  <a class="back" href="index.html">العودة للموقع</a>
+</div>
+
+<script>
+const students = Array.from({length:20}, (_,i) => {
+  const n = String(i + 1).padStart(3, '0');
+  const p = String(i + 1).padStart(2, '0');
+  return { username: `user_name${n}`, password: `CC@${p}x26`, role: 'student' };
+});
+
+const admin = { username: 'admin', password: 'ahmedyg@610', role: 'admin' };
+
+document.getElementById('loginForm').addEventListener('submit', function(e){
+  e.preventDefault();
+
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+
+  const account = [admin, ...students].find(
+    u => u.username === username && u.password === password
+  );
+
+  if(!account){
+    document.getElementById('error').textContent = 'Username أو Password غير صحيح.';
+    return;
+  }
+
+  localStorage.setItem('cc_logged_in', '1');
+  localStorage.setItem('cc_username', account.username);
+  localStorage.setItem('cc_role', account.role);
+
+  window.location.href = 'student-dashboard.html';
+});
+</script>
+</body>
+</html>

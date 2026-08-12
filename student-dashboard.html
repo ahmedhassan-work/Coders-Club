@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coders Club | Student Area</title>
+<style>
+  :root{--bg:#070c17;--card:#101a2c;--cyan:#35d7f0;--blue:#3a6df0;--magenta:#ea3fa0;--text:#f1f5fb;--muted:#93a4c2;--border:rgba(255,255,255,.09)}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% 20%,rgba(53,215,240,.12),transparent 40%),radial-gradient(circle at 80% 80%,rgba(234,63,160,.12),transparent 40%),var(--bg);color:var(--text);font-family:Arial,sans-serif;padding:24px}
+  .wrap{width:min(900px,100%);margin:0 auto}
+  header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand img{width:54px;height:54px;border-radius:50%}
+  h1,h2{margin:0}
+  .logout{border:1px solid var(--border);background:var(--card);color:var(--text);padding:10px 16px;border-radius:100px;cursor:pointer}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;margin-bottom:18px}
+  .welcome{color:var(--muted);margin:8px 0 0}
+  .meeting{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .meeting-link{display:inline-flex;align-items:center;gap:8px;padding:13px 20px;border-radius:100px;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#04121c;text-decoration:none;font-weight:700}
+  .copy{border:1px solid var(--border);background:#0b1424;color:var(--text);padding:12px 18px;border-radius:100px;cursor:pointer}
+  .edit{margin-top:18px;padding-top:18px;border-top:1px solid var(--border)}
+  input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:#0b1424;color:var(--text);margin:10px 0}
+  .save{padding:12px 18px;border:0;border-radius:100px;background:linear-gradient(135deg,var(--magenta),var(--blue));color:#fff;font-weight:700;cursor:pointer}
+  .hint{color:var(--muted);font-size:13px;line-height:1.7}
+  #adminBox{display:none}
+  #emptyMeeting{display:none;color:#ff9bd0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <img src="assets/logo.png" alt="Coders Club logo">
+      <div>
+        <h1>Coders Club</h1>
+        <div class="welcome">مرحبًا، <strong id="studentName"></strong></div>
+      </div>
+    </div>
+    <button class="logout" id="logout">Logout</button>
+  </header>
+
+  <div class="card">
+    <h2>Online Session</h2>
+    <p class="hint">ده لينك الميتنج الخاص بالسيشن. تقدر تدوس عليه مباشرة أو تنسخه.</p>
+
+    <div class="meeting">
+      <a id="meetingLink" class="meeting-link" href="#" target="_blank" rel="noopener noreferrer">
+        دخول السيشن
+      </a>
+      <button class="copy" id="copyBtn">Copy Meeting Link</button>
+    </div>
+
+    <p id="emptyMeeting">لسه لينك الميتنج متضافش.</p>
+
+    <div id="adminBox" class="edit">
+      <h3>Admin — تعديل لينك الميتنج</h3>
+      <input id="meetingInput" type="url" placeholder="https://...">
+      <button class="save" id="saveMeeting">Save Meeting Link</button>
+      <p class="hint">ملاحظة: في النسخة الحالية، التعديل بيتحفظ في Local Storage على نفس المتصفح فقط. عشان كل الطلاب يشوفوا التعديل، محتاجين لاحقًا Database أو Backend.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const role = localStorage.getItem('cc_role');
+const username = localStorage.getItem('cc_username');
+const loggedIn = localStorage.getItem('cc_logged_in');
+
+if(loggedIn !== '1' || !username){
+  window.location.href = 'login.html';
+}
+
+document.getElementById('studentName').textContent = username;
+
+const DEFAULT_MEETING_LINK = 'https://example.com/your-meeting-link';
+
+function getMeetingLink(){
+  return localStorage.getItem('cc_meeting_link') || DEFAULT_MEETING_LINK;
+}
+
+function renderMeeting(){
+  const url = getMeetingLink();
+  const link = document.getElementById('meetingLink');
+  const empty = document.getElementById('emptyMeeting');
+
+  if(!url || url === DEFAULT_MEETING_LINK){
+    link.href = url || '#';
+    empty.style.display = 'block';
+  }else{
+    link.href = url;
+    empty.style.display = 'none';
+  }
+
+  document.getElementById('meetingInput').value =
+    localStorage.getItem('cc_meeting_link') || '';
+}
+
+if(role === 'admin'){
+  document.getElementById('adminBox').style.display = 'block';
+}
+
+document.getElementById('copyBtn').addEventListener('click', async () => {
+  const url = getMeetingLink();
+  try{
+    await navigator.clipboard.writeText(url);
+    document.getElementById('copyBtn').textContent = 'Copied';
+    setTimeout(() => document.getElementById('copyBtn').textContent = 'Copy Meeting Link', 1200);
+  }catch{
+    alert(url);
+  }
+});
+
+document.getElementById('saveMeeting').addEventListener('click', () => {
+  if(role !== 'admin') return;
+  const url = document.getElementById('meetingInput').value.trim();
+
+  if(!url){
+    alert('اكتب لينك الميتنج أولًا.');
+    return;
+  }
+
+  localStorage.setItem('cc_meeting_link', url);
+  renderMeeting();
+  alert('تم حفظ لينك الميتنج على هذا المتصفح.');
+});
+
+document.getElementById('logout').addEventListener('click', () => {
+  localStorage.removeItem('cc_logged_in');
+  localStorage.removeItem('cc_username');
+  localStorage.removeItem('cc_role');
+  window.location.href = 'login.html';
+});
+
+renderMeeting();
+</script>
+</body>
+</html>
