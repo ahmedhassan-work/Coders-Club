@@ -553,6 +553,13 @@
   .contact-card .why-icon{ margin-bottom:0; }
   .contact-card .label{ font-size:13px; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; }
   .contact-card .value{ font-family:'Fredoka',sans-serif; font-size:19px; }
+  html[dir="rtl"] .contact-card .value {
+  align-self: flex-end;
+  }
+  
+  html[dir="ltr"] .contact-card .value {
+    align-self: flex-start;
+  }
 
   /* ---------- FOOTER ---------- */
   footer{ border-top:1px solid var(--border); padding:56px 0 30px; }
@@ -594,12 +601,12 @@
     text-align:left;
   }
   
-  html[dir="rtl"] .contact-col a[style*="inline-flex"] {
-    justify-content:flex-end !important;
+  html[dir="rtl"] .contact-col a {
+    justify-content: flex-end !important;
   }
   
-  html[dir="ltr"] .contact-col a[style*="inline-flex"] {
-    justify-content:flex-start !important;
+  html[dir="ltr"] .contact-col a {
+    justify-content: flex-start !important;
   }
   .footer-bottom{
     border-top:1px solid var(--border); padding-top:24px;
